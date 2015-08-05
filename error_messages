@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Option and argument handling #################################################
+################################################################################
+
+error_getopts () {
+  echo "$PROGNAME: An error occured inside 'getopts'" >&2
+}
+error_invalid_option () {
+  echo "$PROGNAME: Invalid option -- '${1:-$OPTARG}'" >&2
+}
+error_invalid_argument () {
+  echo "$PROGNAME: Invalid argument: '${1:-$OPTARG}' for '${2:-$OPTION}'" >&2
+}
+error_missing_parameter () {
+  echo "$PROGNAME: Option '${1:-$OPTARG}' requires an argument" >&2
+}
+error_missing_argument () {
+  echo "$PROGNAME: Missing argument" >&2
+}
+error_too_much_arguments () {
+  echo "$PROGNAME: Too much arguments" >&2
+}
+
+################################################################################
+# Filesystem handling ##########################################################
+################################################################################
+
+error_directory_not_empty () {
+  echo "$PROGNAME: $1: Directory not empty" >&2
+}
+error_is_directory () {
+  echo "$PROGNAME: $1: Is a directory" >&2
+}
+error_not_a_directory () {
+  echo "$PROGNAME: $1: Not a directory" >&2
+}
+error_missing_file () {
+  echo "$PROGNAME: $1: No such file or directory" >&2
+}
+error_missing_directory () {
+  echo "$PROGNAME: $1: No such file or directory" >&2
+}
+error_permission_denied () {
+  echo "$PROGNAME: $1: Permission denied" >&2
+}
+error_recursive_move () {
+  echo "$PROGNAME: Cannot move '$1' to a subdirectory of itself, '$1/$1'"
+}
+
+################################################################################
+# Superuser ####################################################################
+################################################################################
+
+error_not_root () {
+  echo "$PROGNAME: Not superuser" >&2
+}
+
+################################################################################
+# Commands #####################################################################
+################################################################################
+
+error_command_not_found () {
+  echo "$PROGNAME: Command not found: $1" >&2
+}

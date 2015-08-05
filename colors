@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Colors #######################################################################
+################################################################################
+
+BLACK=`tput setaf 0`
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+YELLOW=`tput setaf 3`
+BLUE=`tput setaf 4`
+PURPLE=`tput setaf 5`
+CYAN=`tput setaf 6`
+WHITE=`tput setaf 7`
+DEFAULT=`tput setaf 8`
+
+BRIGHT_BLACK=`tput setaf 0; tput bold`
+BRIGHT_RED=`tput setaf 1; tput bold`
+BRIGHT_GREEN=`tput setaf 2; tput bold`
+BRIGHT_YELLOW=`tput setaf 3; tput bold`
+BRIGHT_BLUE=`tput setaf 4; tput bold`
+BRIGHT_PURPLE=`tput setaf 5; tput bold`
+BRIGHT_CYAN=`tput setaf 6; tput bold`
+BRIGHT_WHITE=`tput setaf 7; tput bold`
+
+BG_BLACK=`tput setab 0`
+BG_RED=`tput setab 1`
+BG_GREEN=`tput setab 2`
+BG_YELLOW=`tput setab 3`
+BG_BLUE=`tput setab 4`
+BG_PURPLE=`tput setab 5`
+BG_CYAN=`tput setab 6`
+BG_WHITE=`tput setab 7`
+
+UNDERLINE=`tput smul`
+NO_UNDERLINE=`tput rmul`
+
+STANDOUT=`tput smso`
+NO_STANDOUT=`tput rmso`
+
+BOLD=`tput bold`
+RESET=`tput sgr0`
+REV=`tput rev`

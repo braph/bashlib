@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# String functions #############################################################
+################################################################################
+
+substr() {
+  echo "${1:$2:$3}"
+}
+
+tolower() {
+  echo "${1,,}"
+}
+
+toupper() {
+  echo "${1^^}"
+}
+
+swapcase() {
+  echo "${1~~}"
+  # undocumented bash feature!
+}
+
+remove_colorcodes () {
+  sed 's/\\\033[^a-zA-Z]*.//g'
+}
+
+valid_pathname () {
+  echo "$@" | tr -sc '[:alnum:]-_,/' '.' | sed 's/\.$//; s/^\.//;'
+}
+
+get_extension() {
+  echo "${1##*.}"
+}
+
+no_extension() {
+  echo "${1%.*}"
+}
+
+unquote() {
+  local STRING="${1:?$FUNCNAME: Missing argument}"
+  local QUOTES="" I=0 CHAR="" ESCAPE=0
+
+  for I in `seq 0 ${#STRING}`; do
+    CHAR="${STRING:$I:1}"
+
+    case "$QUOTES" in
+    \") 
+        if (( $ESCAPE == 1 )) ; then
+          ESCAPE=0
+          printf "\\$CHAR"
+          continue
+        fi
+
+        case "$CHAR" in
+        \\) ESCAPE=1 ;;
+        \") QUOTES= ;;
+         *) printf "$CHAR" ;;
+        esac ;;
+    \')
+        case "$CHAR" in
+        \') QUOTES= ;;
+         *) printf "$CHAR" ;;
+        esac ;;
+     *)
+        case "$CHAR" in
+        \") QUOTES=\" ;;
+        \') QUOTES=\' ;;
+         *) printf "$CHAR" ;;
+        esac ;;
+    esac
+  done
+}
+#' vim bug xD
+
+#unquote () {
+#  eval printf "$1"
+#}
+# faster solution, but insecure!

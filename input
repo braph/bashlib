@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Inputfunctions ###############################################################
+################################################################################
+
+read_default () {
+  # Usage: read_default <variable> <prompt>
+  # Options:
+  #   -e echo value instead of setting it to var
+
+  local REPLY="" DEFAULT="" ECHO=0 
+
+  [[ "$1" = "-e" ]] && ECHO=1 && shift
+
+  DEFAULT="${!1}"
+
+  read -p "$2[$DEFAULT]: "
+
+  if [[ $ECHO -eq 1 ]]; then
+    echo "${REPLY:-$DEFAULT}"
+  else
+    declare -g "$1"="${REPLY:-$DEFAULT}"
+  fi
+}
+
+readyesno () {
+  # Usage: readyesno <prompt>
+  # Options:
+  #   -n use no as default
+  #   -y use yes as default
+  #   -e echo 0 or 1 instead of returning an exit code
+  #   -v <var> assign 0 or 1 to var instead of ''
+
+  # make getopts variables private
+  local OPTIND OPTARG OPTERR OPTION
+  local -l ANSWER= DEFAULT=" " #lowercase
+  local ECHO=0 VAR=
+
+  while getopts :nyev: OPTION ; do
+    case "$OPTION" in
+      n) DEFAULT="n" ;;
+      y) DEFAULT="y" ;;
+      e) ECHO=1 ;;
+      v) VAR="$OPTARG" ;;
+      \?) echo "Unknown option \"-$OPTARG\"" >&2
+          return 2;;
+      :)  echo "Option \"-$OPTARG\" needs an argument." >&2
+          return 2;;
+      *)  echo printf "Internal error..." >&2
+          return 2;;
+    esac
+  done
+
+  shift $(( OPTIND - 1 ))
+
+  YES_NO=`echo "[y/n]: " | tr "$DEFAULT" "${DEFAULT^^}"`
+
+  while [[ -z "$ANSWER" ]] ; do
+    read -p "$1$YES_NO" -n 1 ANSWER
+
+    if [[ -z "$ANSWER" ]] && [[ -n "$DEFAULT" ]] ; then
+      ANSWER="$DEFAULT"
+    else # enter was not pressed, print a newline!
+      printf "\n"
+    fi
+
+    case "$ANSWER" in
+      n|y) break ;;
+      *) ANSWER= ;;
+    esac
+  done
+
+  if [[ -n "$VAR" ]] ; then
+    case "$ANSWER" in
+      y) declare -g "$VAR"=1 ;;
+      n) declare -g "$VAR"=0 ;;
+    esac
+  elif [[ $ECHO -eq 1 ]]; then
+    case "$ANSWER" in
+      y) echo 1 ;;
+      n) echo 0 ;;
+    esac
+  else
+    case "$ANSWER" in
+      y) return 0 ;;
+      n) return 1 ;;
+    esac
+  fi
+}

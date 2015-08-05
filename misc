@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Miscellaneous functions ######################################################
+################################################################################
+
+bash_man () {
+  bash -c "help -m $1" | less
+}
+
+password_gen () {
+  < /dev/urandom tr -dc '[:alnum:]' | head -c "${1:?$FUNCNAME: Missing argument}"
+}
+
+random_words () {
+  local FILE=/usr/share/dict/cracklib-small
+
+  if ! [[ -r "$FILE" ]] ; then
+    echo "$FUNCNAME: $FILE: not such file or directory"
+    return 1
+  fi
+
+  shuf "$FILE" | head -n $1 | tr '\n' ' ' | tr -dc "[:alnum:] " | sed 's/ $//'
+}
+
+run () {
+  if which $1 &>/dev/null ; then
+    echo "$PROGNAME: $FUNCNAME: $@" >&2
+    setsid $@ &>/dev/null
+  else
+    echo "$PROGNAME: $FUNCNAME: command not found: $1" >&2
+  fi
+}
+
+line () {
+  local I=0
+
+  for I in `seq 1 ${1:-80}`; do
+    printf "${2:-#}"
+  done
+
+  echo "$3"
+}
+
+countdown () {
+  local -i COUNT="${1:?$FUNCNAME: Missing operand}"
+  local SLEEP=${2:-1}
+  local I=0 B="${COUNT//?/\b}"
+
+  for I in `seq -w $COUNT -1 0` ; do
+    printf "$I"; sleep $SLEEP; printf "$B"
+  done
+}
+
+tput () {
+  [[ -t 1 ]] && command tput $@
+}
+
+lines () {
+  declare -i I=0 LINE=0
+
+  while read; do
+    LINE+=1
+    for I ; do
+      [[ $LINE -eq $I ]] && echo "$REPLY" && break
+    done
+  done
+}
+
+is_legal_var() {
+  local VAR="${1:?$FUNCNAME: Missing argument}"
+  local RESERVED_SHELL_VARS="ARFLAGS CC CDPATH CFLAGS CHARSET COLUMNS DATEMSK DEAD EDITOR ENV EXINIT FC FCEDIT FFLAGS GET GFLAGS HISTFILE HISTORY HISTSIZE HOME IFS LANG LC_ALL LC_COLLATE LC_CTYPE LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME LDFLAGS LEX LFLAGS LINENO LINES LISTER LOGNAME LPDEST MAIL MAILCHECK MAILER MAILPATH MAILRC MAKEFLAGS MAKESHELL MANPATH MBOX MORE MSGVERB NLSPATH NPROC OLDPWD OPTARG OPTERR OPTIND PAGER PATH PPID PRINTER PROCLANG PROJECTDIR PS1 PS2 PS3 PS4 PWD RANDOM SECONDS SHELL TERM TERMCAP TERMINFO TMPDIR TZ USER VISUAL YACC YFLAGS"
+
+  if echo "$RESERVED_SHELL_VARS" | grep -Eiq "\<$VAR\>" ; then
+    echo "\$$VAR is not a legal shell variable"
+    return 1
+  else
+    echo "\$$VAR is a legal shell variable"
+    return 0
+  fi
+}

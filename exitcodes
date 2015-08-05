@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Errorcodes ###################################################################
+################################################################################
+
+E_OK=0              # all went good
+E_BAD_OPTIONS=1     # bad options specified
+E_BAD_ARGUMENTS=2   # bad arguments specified
+E_DEPENDENCIES=3    # dependencies not met
+E_NOT_ROOT=4        # you are not root
+E_NO_PERMISSION=5   # no permissions to read/create a file/dir
+E_SCRIPTBUG=6       # an error inside the script occured

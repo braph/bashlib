@@ -1,0 +1,278 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# HTML functions ###############################################################
+################################################################################
+
+html_entity_decode () {
+sed "
+s/&#34;/\"/g; s/&quot;/\"/g;
+s/&#39;/'/g; s/&apos;/'/g;
+s/&#38;/&/g; s/&amp;/&/g;
+s/&#60;/</g; s/&lt;/</g;
+s/&#62;/>/g; s/&gt;/>/g;
+s/&#160;/ /g; s/&nbsp;/ /g;
+s/&#161;/¡/g; s/&iexcl;/¡/g;
+s/&#162;/¢/g; s/&cent;/¢/g;
+s/&#163;/£/g; s/&pound;/£/g;
+s/&#164;/¤/g; s/&curren;/¤/g;
+s/&#165;/¥/g; s/&yen;/¥/g;
+s/&#166;/¦/g; s/&brvbar;/¦/g;
+s/&#167;/§/g; s/&sect;/§/g;
+s/&#168;/¨/g; s/&uml;/¨/g;
+s/&#169;/©/g; s/&copy;/©/g;
+s/&#170;/ª/g; s/&ordf;/ª/g;
+s/&#171;/«/g; s/&laquo;/«/g;
+s/&#172;/¬/g; s/&not;/¬/g;
+s/&#174;/®/g; s/&reg;/®/g;
+s/&#175;/¯/g; s/&macr;/¯/g;
+s/&#176;/°/g; s/&deg;/°/g;
+s/&#177;/±/g; s/&plusmn;/±/g;
+s/&#178;/²/g; s/&sup2;/²/g;
+s/&#179;/³/g; s/&sup3;/³/g;
+s/&#180;/´/g; s/&acute;/´/g;
+s/&#181;/µ/g; s/&micro;/µ/g;
+s/&#182;/¶/g; s/&para;/¶/g;
+s/&#183;/·/g; s/&middot;/·/g;
+s/&#184;/¸/g; s/&cedil;/¸/g;
+s/&#185;/¹/g; s/&sup1;/¹/g;
+s/&#186;/º/g; s/&ordm;/º/g;
+s/&#187;/»/g; s/&raquo;/»/g;
+s/&#188;/¼/g; s/&frac14;/¼/g;
+s/&#189;/½/g; s/&frac12;/½/g;
+s/&#190;/¾/g; s/&frac34;/¾/g;
+s/&#191;/¿/g; s/&iquest;/¿/g;
+s/&#215;/×/g; s/&times;/×/g;
+s/&#247;/÷/g; s/&divide;/÷/g;
+s/&#192;/À/g; s/&Agrave;/À/g;
+s/&#193;/Á/g; s/&Aacute;/Á/g;
+s/&#194;/Â/g; s/&Acirc;/Â/g;
+s/&#195;/Ã/g; s/&Atilde;/Ã/g;
+s/&#196;/Ä/g; s/&Auml;/Ä/g;
+s/&#197;/Å/g; s/&Aring;/Å/g;
+s/&#198;/Æ/g; s/&AElig;/Æ/g;
+s/&#199;/Ç/g; s/&Ccedil;/Ç/g;
+s/&#200;/È/g; s/&Egrave;/È/g;
+s/&#201;/É/g; s/&Eacute;/É/g;
+s/&#202;/Ê/g; s/&Ecirc;/Ê/g;
+s/&#203;/Ë/g; s/&Euml;/Ë/g;
+s/&#204;/Ì/g; s/&Igrave;/Ì/g;
+s/&#205;/Í/g; s/&Iacute;/Í/g;
+s/&#206;/Î/g; s/&Icirc;/Î/g;
+s/&#207;/Ï/g; s/&Iuml;/Ï/g;
+s/&#208;/Ð/g; s/&ETH;/Ð/g;
+s/&#209;/Ñ/g; s/&Ntilde;/Ñ/g;
+s/&#210;/Ò/g; s/&Ograve;/Ò/g;
+s/&#211;/Ó/g; s/&Oacute;/Ó/g;
+s/&#212;/Ô/g; s/&Ocirc;/Ô/g;
+s/&#213;/Õ/g; s/&Otilde;/Õ/g;
+s/&#214;/Ö/g; s/&Ouml;/Ö/g;
+s/&#216;/Ø/g; s/&Oslash;/Ø/g;
+s/&#217;/Ù/g; s/&Ugrave;/Ù/g;
+s/&#218;/Ú/g; s/&Uacute;/Ú/g;
+s/&#219;/Û/g; s/&Ucirc;/Û/g;
+s/&#220;/Ü/g; s/&Uuml;/Ü/g;
+s/&#221;/Ý/g; s/&Yacute;/Ý/g;
+s/&#222;/Þ/g; s/&THORN;/Þ/g;
+s/&#223;/ß/g; s/&szlig;/ß/g;
+s/&#224;/à/g; s/&agrave;/à/g;
+s/&#225;/á/g; s/&aacute;/á/g;
+s/&#226;/â/g; s/&acirc;/â/g;
+s/&#227;/ã/g; s/&atilde;/ã/g;
+s/&#228;/ä/g; s/&auml;/ä/g;
+s/&#229;/å/g; s/&aring;/å/g;
+s/&#230;/æ/g; s/&aelig;/æ/g;
+s/&#231;/ç/g; s/&ccedil;/ç/g;
+s/&#232;/è/g; s/&egrave;/è/g;
+s/&#233;/é/g; s/&eacute;/é/g;
+s/&#234;/ê/g; s/&ecirc;/ê/g;
+s/&#235;/ë/g; s/&euml;/ë/g;
+s/&#236;/ì/g; s/&igrave;/ì/g;
+s/&#237;/í/g; s/&iacute;/í/g;
+s/&#238;/î/g; s/&icirc;/î/g;
+s/&#239;/ï/g; s/&iuml;/ï/g;
+s/&#240;/ð/g; s/&eth;/ð/g;
+s/&#241;/ñ/g; s/&ntilde;/ñ/g;
+s/&#242;/ò/g; s/&ograve;/ò/g;
+s/&#243;/ó/g; s/&oacute;/ó/g;
+s/&#244;/ô/g; s/&ocirc;/ô/g;
+s/&#245;/õ/g; s/&otilde;/õ/g;
+s/&#246;/ö/g; s/&ouml;/ö/g;
+s/&#248;/ø/g; s/&oslash;/ø/g;
+s/&#249;/ù/g; s/&ugrave;/ù/g;
+s/&#250;/ú/g; s/&uacute;/ú/g;
+s/&#251;/û/g; s/&ucirc;/û/g;
+s/&#252;/ü/g; s/&uuml;/ü/g;
+s/&#253;/ý/g; s/&yacute;/ý/g;
+s/&#254;/þ/g; s/&thorn;/þ/g;
+s/&#255;/ÿ/g; s/&yuml;/ÿ/g;
+"
+}
+
+html_entity_encode () {
+sed "
+s/\"/&quot;/g;
+s/'/&apos;/g;
+s/&/&amp;/g;
+s/</&lt;/g;
+s/>/&gt;/g;
+s/ /&nbsp;/g;
+s/¡/&iexcl;/g;
+s/¢/&cent;/g;
+s/£/&pound;/g;
+s/¤/&curren;/g;
+s/¥/&yen;/g;
+s/¦/&brvbar;/g;
+s/§/&sect;/g;
+s/¨/&uml;/g;
+s/©/&copy;/g;
+s/ª/&ordf;/g;
+s/«/&laquo;/g;
+s/¬/&not;/g;
+s/®/&reg;/g;
+s/¯/&macr;/g;
+s/°/&deg;/g;
+s/±/&plusmn;/g;
+s/²/&sup2;/g;
+s/³/&sup3;/g;
+s/´/&acute;/g;
+s/µ/&micro;/g;
+s/¶/&para;/g;
+s/·/&middot;/g;
+s/¸/&cedil;/g;
+s/¹/&sup1;/g;
+s/º/&ordm;/g;
+s/»/&raquo;/g;
+s/¼/&frac14;/g;
+s/½/&frac12;/g;
+s/¾/&frac34;/g;
+s/¿/&iquest;/g;
+s/×/&times;/g;
+s/÷/&divide;/g;
+s/À/&Agrave;/g;
+s/Á/&Aacute;/g;
+s/Â/&Acirc;/g;
+s/Ã/&Atilde;/g;
+s/Ä/&Auml;/g;
+s/Å/&Aring;/g;
+s/Æ/&AElig;/g;
+s/Ç/&Ccedil;/g;
+s/È/&Egrave;/g;
+s/É/&Eacute;/g;
+s/Ê/&Ecirc;/g;
+s/Ë/&Euml;/g;
+s/Ì/&Igrave;/g;
+s/Í/&Iacute;/g;
+s/Î/&Icirc;/g;
+s/Ï/&Iuml;/g;
+s/Ð/&ETH;/g;
+s/Ñ/&Ntilde;/g;
+s/Ò/&Ograve;/g;
+s/Ó/&Oacute;/g;
+s/Ô/&Ocirc;/g;
+s/Õ/&Otilde;/g;
+s/Ö/&Ouml;/g;
+s/Ø/&Oslash;/g;
+s/Ù/&Ugrave;/g;
+s/Ú/&Uacute;/g;
+s/Û/&Ucirc;/g;
+s/Ü/&Uuml;/g;
+s/Ý/&Yacute;/g;
+s/Þ/&THORN;/g;
+s/ß/&szlig;/g;
+s/à/&agrave;/g;
+s/á/&aacute;/g;
+s/â/&acirc;/g;
+s/ã/&atilde;/g;
+s/ä/&auml;/g;
+s/å/&aring;/g;
+s/æ/&aelig;/g;
+s/ç/&ccedil;/g;
+s/è/&egrave;/g;
+s/é/&eacute;/g;
+s/ê/&ecirc;/g;
+s/ë/&euml;/g;
+s/ì/&igrave;/g;
+s/í/&iacute;/g;
+s/î/&icirc;/g;
+s/ï/&iuml;/g;
+s/ð/&eth;/g;
+s/ñ/&ntilde;/g;
+s/ò/&ograve;/g;
+s/ó/&oacute;/g;
+s/ô/&ocirc;/g;
+s/õ/&otilde;/g;
+s/ö/&ouml;/g;
+s/ø/&oslash;/g;
+s/ù/&ugrave;/g;
+s/ú/&uacute;/g;
+s/û/&ucirc;/g;
+s/ü/&uuml;/g;
+s/ý/&yacute;/g;
+s/þ/&thorn;/g;
+s/ÿ/&yuml;/g;
+"
+}
+
+url_decode(){
+  printf "`sed 's/+/ /g; s/%/\\\\x/g'`"
+}
+
+url_encode () {
+  sed "s/%/%25/g;
+s/ /%20/g;
+s/ /%09/g;
+s/!/%21/g;
+s/\"/%22/g;
+s/#/%23/g;
+s/\$/%24/g;
+s/\&/%26/g;
+s/'/%27/g;
+s/(/%28/g;
+s/)/%29/g;
+s/\*/%2a/g;
+s/+/%2b/g;
+s/,/%2c/g;
+s/-/%2d/g;
+s/\./%2e/g;
+s/\//%2f/g;
+s/:/%3a/g;
+s/;/%3b/g;
+s//%3e/g;
+s/?/%3f/g;
+s/@/%40/g;
+s/\[/%5b/g;
+s/\\/%5c/g;
+s/\]/%5d/g;
+s/\^/%5e/g;
+s/_/%5f/g;
+s/\`/%60/g;
+s/{/%7b/g;
+s/|/%7c/g;
+s/}/%7d/g;
+s/~/%7e/g;
+s/      /%09/g"
+}
+
+uri_escape () {
+  perl -MURI::Escape -lne 'print uri_escape($_)'
+}
+
+uri_unescape () {
+  perl -MURI::Escape -lne 'print uri_unescape($_)'
+}

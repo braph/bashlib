@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Net functions ################################################################
+################################################################################
+
+valid_http_link () {
+  local LINK="${1:?$FUNCNAME: Missing argument}"
+
+  local PROTOCOL='(.+://)?'
+  local USER_PASS='((.+)(:.+)?@)?'
+  local _HOST='([a-zA-Z0-9\.-]+)'
+  local PORT='(:[0-9]+)?'
+  local _PATH='([^\?#]+)?'
+  local QUERY='(\?[^#]*)?'
+  local FRAGMENT='(#.*)?'
+
+  # protocol://username:password@hostname/path?query&arg=value#fragment
+  grep -qE "$PROTOCOL$USER_PASS$_HOST$PORT$_PATH$QUERY$FRAGMENT" <<< "$LINK"
+}
+
+parse_url () {
+  local WHAT="${1:?$FUNCNAME: Missing argument}"
+  local LINK="${2:?$FUNCNAME: Missing argument}"
+  local X=0 PART=""
+
+  local PROTOCOL='(.+://)?'
+  local USER_PASS='((.+)(:.+)?@)?'
+  local HOST='([a-zA-Z0-9\.-]+)'
+  local PORT='(:[0-9]+)?'
+  local _PATH='([^\?#]+)?'
+  local QUERY='(\?[^#]*)?'
+  local FRAGMENT='(#.*)?'
+
+  case ${WHAT,,} in
+      proto*) X=1 ;;
+       user*) X=3 ;;
+       pass*) X=3 ;;
+       host*) X=5 ;;
+        port) X=6 ;;
+        path) X=7 ;;
+       query) X=8 ;;
+    fragment) X=9 ;;
+           *) return 1 ;;
+  esac
+
+  # protocol://username:password@hostname/path?query&arg=value#fragment
+  PART=`sed -r "s|$PROTOCOL$USER_PASS$HOST$PORT$_PATH$QUERY$FRAGMENT|\\\\$X|g" <<< "$LINK"`
+
+  case ${WHAT,,} in
+      proto*) printf "${PART%://}" ;;
+       user*) printf "${PART%:*}"  ;;
+       pass*) printf "${PART#*:}"  ;;
+       host*) printf "${PART}"     ;;
+        port) printf "${PART#:}"   ;;
+        path) printf "${PART}"     ;;
+       query) printf "${PART#\?}"  ;;
+    fragment) printf "${PART#\#}"  ;;
+  esac
+
+  printf "\n"
+}
+
+get_location () {
+  local LINK="${1:?$FUNCNAME: Missing argument}"
+  local DOMAIN=`grep -Eo 'https?://[^/]+' <<< "$LINK"`
+  local LOCATION=""
+
+  LOCATION=`wget -S -qO/dev/null "$LINK" 2>&1 | grep Location: | tail -1 | sed 's/ *Location: *//'`
+
+  if [[ -z "$LOCATION" ]] ; then
+    echo "$LINK"
+  elif [[ ${LOCATION:0:1} = "/" ]] ; then
+    echo "$DOMAIN$LOCATION"
+  else
+   echo "$LOCATION"
+  fi
+}

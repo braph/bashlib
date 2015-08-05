@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Operators ####################################################################
+################################################################################
+
+is_even () {
+  (( ${1?"$FUNCNAME: Missing operand"} % 2 == 0 ))
+}
+
+is_odd () {
+  (( ${1?"$FUNCNAME: Missing operand"} % 2 == 1 ))
+}
+
+is_true () {
+  grep -Eiq '\<(true|yes|y|j|enabled|on|1)\>' <<< "$@"
+}
+
+is_false () {
+  grep -Eiq '\<(false|no|n|disabled|off|0|fail|failed)\>' <<< "$@"
+}
+
+is_root () {
+  (( UID == 0 ))
+}
+
+is_digit () {
+  case $1 in
+    *[!0-9]*|"") return 1 ;;
+    *) return 0
+  esac
+}
+
+is_xdigit () {
+  case $1 in
+    *[!0-9a-fA-F]*|"") return 1 ;;
+    *) return 0
+  esac
+}
+
+is_alpha () {
+  case $1 in
+    *[!a-zA-Z]*|"") return 1 ;;
+    *) return 0
+  esac
+}
+
+is_alnum () {
+  case $1 in
+    *[!a-zA-Z0-9]*|"") return 1 ;;
+    *) return 0
+  esac
+}
+
+defined () {
+  [[ ${!1-X} == ${!1-Y} ]]
+}
+
+has_value () {
+  defined $1 && [[ -n ${!1} ]]
+}
+
+default () {
+  has_value "$1" || declare -g $1="${2:-}"
+}

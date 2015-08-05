@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# Copyright (C) 2015 Benjamin Abendroth
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+################################################################################
+# Ini File functions ###########################################################
+################################################################################
+
+include string error_messages
+
+ini_set_file () {
+  declare -g __INI_FILE="${1:?$FUNCNAME: Missing argument}"
+}
+
+ini_get_file () {
+  echo "$__INI_FILE"
+}
+
+ini_file_okay () {
+  local FILE="${__INI_FILE:?$FUNCNAME: \$__INI_FILE not set}"
+
+  if [[ -f "$FILE" ]] && [[ -r "$FILE" ]] ; then
+    return 0
+  elif ! [[ -e "$FILE" ]] ; then
+    error_missing_file "$FILE"
+    return 1
+  elif [[ -d "$FILE" ]] ; then
+    error_is_directory "$FILE"
+    return 1
+  elif ! [[ -r "$FILE" ]] ; then
+    error_permission_denied "$FILE"
+    return 1
+  fi
+}
+
+ini_print_file () {
+  ini_file_okay || return 1
+
+  local S='[[:space:]]'  # space class
+  local N='[^[:space:]]' # non space class
+  local NP='[^[:print:]]' # non printable class
+
+  # remove leading spaces
+  # remove spaces aside of the equal sign (e.g. "variable = value" turns to "variable=value")
+  # remove spaces in sections (e.g. "[  section ]" turns to "[section]")
+  # remove all non printable characters
+  # remove comments ("#" and ";") and empty lines
+  sed -r "s/^$S+//g; s/^($N+)$S*=$S*/\1=/g; s/\[$S*($N+)$S*\]/[\1]/g; s/$NP//g" "$__INI_FILE" | grep -Eo '^[^#;].+'
+}
+
+ini_list_sections () {
+  ini_file_okay || return 1
+  ini_print_file | grep '^\[' | tr -d \[\]
+}
+
+ini_list_variables () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+
+  ini_get_section "$SECTION" | sed 's/=.*//g'
+}
+
+ini_section_exists () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+
+  ini_print_file | grep -qF "[$SECTION]"
+}
+
+ini_get_section () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+  local REPLY SEC_OPEN=0
+
+  ini_print_file | while read; do
+
+    if [[ "${REPLY:0:1}" == "[" ]] ; then # is it a new section?
+      if [[ "${REPLY}" == "[$SECTION]" ]] ; then # is it the wanted section?
+        SEC_OPEN=1 # yes: section is now open!
+        continue
+      else
+        SEC_OPEN=0 # no: section is closed
+        continue
+      fi
+    fi
+
+    [[ $SEC_OPEN == 1 ]] && echo "$REPLY"
+  done
+}
+
+ini_get_variable () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+  local VARIABLE="${2:?$FUNCNAME: Missing argument}"
+
+  local VALUE=`ini_get_section "$SECTION" | grep -F "$VARIABLE="`
+  unquote "${VALUE:$(( ${#VARIABLE} + 1 ))}"
+}
+
+ini_variable_exists () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+  local VARIABLE="${2:?$FUNCNAME: Missing argument}"
+
+  ini_list_variables "$SECTION" | grep -qF "$VARIABLE="
+}
+
+ini_remove_section () {
+  ini_file_okay || return 1
+  local SECTION="${1:?$FUNCNAME: Missing argument}"
+  local REPLY SEC_OPEN=0
+
+  ini_print_file | while read; do
+
+    if [[ "${REPLY:0:1}" == "[" ]] ; then # is it a new section?
+      if [[ "${REPLY}" == "[$SECTION]" ]] ; then # is it the wanted section?
+        SEC_OPEN=1 # yes: section is now open!
+      else
+        SEC_OPEN=0 # no: section is closed
+      fi
+    fi
+
+    [[ $SEC_OPEN == 0 ]] && echo "$REPLY"
+  done
+}
+
